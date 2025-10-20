@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
   <head>
     <!-- TripleWhale Tracking - Must be first -->
     <link rel='preconnect dns-prefetch' href='https://api.config-security.com/' crossorigin />
@@ -68,7 +68,13 @@
       }
       scan(document);
       scanPrivacy(document);
-      observer.observe(document.body, { childList: true, subtree: true });
+      if (document.body) {
+        observer.observe(document.body, { childList: true, subtree: true });
+      } else {
+        window.addEventListener('DOMContentLoaded', function(){
+          if (document.body) observer.observe(document.body, { childList: true, subtree: true });
+        });
+      }
     })();
     </script>
     <style>
@@ -81,15 +87,17 @@
     (function(){
       function isLangToggle(el){
         if(!el || el.nodeType!==1) return false;
+        var tag = el.tagName;
+        if (tag === 'HTML' || tag === 'BODY' || (el.id||'').toLowerCase()==='root') return false;
         var t=(el.textContent||'').trim().toLowerCase();
         if(t==='en' || t==='english' || t==='tr' || t==='türkçe' || t==='turkish') return true;
         var lang=(el.getAttribute('lang')||el.getAttribute('data-lang')||'').toLowerCase();
-        return lang && lang!=='de';
+        return !!lang && (lang==='en' || lang==='tr');
       }
       function removeLangToggles(root){
         if(!root) return;
         if(root.querySelectorAll){
-          var nodes=root.querySelectorAll('a,button,[lang],[data-lang]');
+          var nodes=root.querySelectorAll('a,button,[data-lang],[lang]');
           for(var i=0;i<nodes.length;i++){ if(isLangToggle(nodes[i])) nodes[i].remove(); }
         }
       }
@@ -99,7 +107,7 @@
           var added=ms[i].addedNodes||[];
           for(var j=0;j<added.length;j++) removeLangToggles(added[j]);
         }
-      }).observe(document.body,{childList:true,subtree:true});
+      }).observe(document.body || document.documentElement,{childList:true,subtree:true});
     })();
     </script>
   </body>

@@ -82,8 +82,17 @@
       .site-footer a{color:inherit;text-decoration:none}
       .site-footer a:hover{text-decoration:underline}
     </style>
+    <style>
+      /* Hide language switcher buttons - narrow targeting */
+      [data-lang="en"], [data-lang="tr"], 
+      [data-locale="en"], [data-locale="tr"],
+      [lang="en"], [lang="tr"] {
+        display: none !important;
+        visibility: hidden !important;
+      }
+    </style>
     <script>
-    // Remove English/Turkish language toggles if present (including dynamic renders)
+    // Remove English/Turkish language toggles via DOM manipulation
     (function(){
       function isLangToggle(el){
         if(!el || el.nodeType!==1) return false;
@@ -117,16 +126,16 @@
 
         return false;
       }
-      
+
       function removeLangToggles(root){
         if(!root) return;
-        
+
         // Remove the element itself if it's a language toggle
-        if(root.nodeType===1 && isLangToggle(root)) { 
-          try{ root.remove(); }catch(e){} 
+        if(root.nodeType===1 && isLangToggle(root)) {
+          try{ root.remove(); }catch(e){}
           return;
         }
-        
+
         // Remove child elements that are language toggles
         if(root.querySelectorAll){
           var nodes=root.querySelectorAll('a,button,div,span,[data-lang],[lang],[aria-label],[title],[data-locale]');
@@ -137,10 +146,10 @@
           }
         }
       }
-      
+
       // Remove immediately
       removeLangToggles(document);
-      
+
       // Remove on DOM changes
       var target = document.body || document.documentElement;
       new MutationObserver(function(ms){
@@ -153,8 +162,8 @@
           for(var j=0;j<added.length;j++) removeLangToggles(added[j]);
         }
       }).observe(target,{childList:true,subtree:true,attributes:true,attributeFilter:['href','lang','data-lang','aria-label','title','data-locale']});
-      
-      // Also run periodically to catch any missed elements (reduced frequency)
+
+      // Periodic cleanup for any missed elements
       setInterval(function(){
         removeLangToggles(document);
       }, 3000);

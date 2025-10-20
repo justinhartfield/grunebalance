@@ -1,4 +1,8 @@
 /impressum /impressum.html 200
 /datenschutz /datenschutz.html 200
+ /en / 301
+ /en/* / 301
+ /tr / 301
+ /tr/* / 301
 /* /index.html 200
 

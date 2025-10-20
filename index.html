@@ -19,6 +19,9 @@
   </head>
   <body>
     <div id="root"></div>
+    <footer class="site-footer">
+      <nav><a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a></nav>
+    </footer>
     <script>
     // Retarget any anchor with text "Impressum" to the internal static page
     (function () {
@@ -66,6 +69,37 @@
       scan(document);
       scanPrivacy(document);
       observer.observe(document.body, { childList: true, subtree: true });
+    })();
+    </script>
+    <style>
+      .site-footer{margin:32px 0 24px;text-align:center;color:#666;font-size:12px}
+      .site-footer a{color:inherit;text-decoration:none}
+      .site-footer a:hover{text-decoration:underline}
+    </style>
+    <script>
+    // Remove English/Turkish language toggles if present (including dynamic renders)
+    (function(){
+      function isLangToggle(el){
+        if(!el || el.nodeType!==1) return false;
+        var t=(el.textContent||'').trim().toLowerCase();
+        if(t==='en' || t==='english' || t==='tr' || t==='türkçe' || t==='turkish') return true;
+        var lang=(el.getAttribute('lang')||el.getAttribute('data-lang')||'').toLowerCase();
+        return lang && lang!=='de';
+      }
+      function removeLangToggles(root){
+        if(!root) return;
+        if(root.querySelectorAll){
+          var nodes=root.querySelectorAll('a,button,[lang],[data-lang]');
+          for(var i=0;i<nodes.length;i++){ if(isLangToggle(nodes[i])) nodes[i].remove(); }
+        }
+      }
+      removeLangToggles(document);
+      new MutationObserver(function(ms){
+        for(var i=0;i<ms.length;i++){
+          var added=ms[i].addedNodes||[];
+          for(var j=0;j<added.length;j++) removeLangToggles(added[j]);
+        }
+      }).observe(document.body,{childList:true,subtree:true});
     })();
     </script>
   </body>

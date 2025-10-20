@@ -100,26 +100,36 @@
         var href = '';
         try { href = norm(el.getAttribute('href') || el.href); } catch(e) {}
 
-        function isEnTr(s){
-          if(!s) return false;
-          return s==='en' || s==='tr' || s==='english' || s==='türkçe' || s==='turkish' || s==='🇹🇷' || s==='🇬🇧' || s==='🇺🇸' || s==='tr🇹🇷' || s==='en🇬🇧';
-        }
+        // Check for flag emojis and language text
+        var hasEnFlag = txt.includes('🇬🇧') || txt.includes('🇺🇸') || txt.includes('🇬🇧') || txt.includes('🇺🇸');
+        var hasTrFlag = txt.includes('🇹🇷');
+        var hasEnText = txt.includes('english') || txt.includes('en') || aria.includes('english') || aria.includes('en');
+        var hasTrText = txt.includes('türkçe') || txt.includes('turkish') || txt.includes('tr') || aria.includes('türkçe') || aria.includes('turkish') || aria.includes('tr');
 
-        if (isEnTr(txt) || isEnTr(aria) || isEnTr(title) || isEnTr(dataLocale) || isEnTr(dataLang) || isEnTr(lang)) return true;
+        // Remove if contains English or Turkish flags/text
+        if (hasEnFlag || hasTrFlag || hasEnText || hasTrText) return true;
 
-        // Short label variants like "EN" / "TR"
-        if (txt && txt.length <= 3 && (txt === 'en' || txt === 'tr')) return true;
+        // Check for language codes
+        if (lang === 'en' || lang === 'tr' || dataLang === 'en' || dataLang === 'tr' || dataLocale === 'en' || dataLocale === 'tr') return true;
 
-        // Links pointing to EN/TR paths or query params
+        // Check for href patterns
         if (href && (/(^|\/)en(\/|$)/.test(href) || /(^|\/)tr(\/|$)/.test(href) || /[?&]lang=(en|tr)\b/.test(href))) return true;
 
         return false;
       }
+      
       function removeLangToggles(root){
         if(!root) return;
-        if(root.nodeType===1 && isLangToggle(root)) { try{ root.remove(); }catch(e){} }
+        
+        // Remove the element itself if it's a language toggle
+        if(root.nodeType===1 && isLangToggle(root)) { 
+          try{ root.remove(); }catch(e){} 
+          return;
+        }
+        
+        // Remove child elements that are language toggles
         if(root.querySelectorAll){
-          var nodes=root.querySelectorAll('a,button,[data-lang],[lang],[aria-label],[title]');
+          var nodes=root.querySelectorAll('*');
           for(var i=0;i<nodes.length;i++){
             if(isLangToggle(nodes[i])){
               try{ nodes[i].remove(); }catch(e){}
@@ -127,7 +137,11 @@
           }
         }
       }
+      
+      // Remove immediately
       removeLangToggles(document);
+      
+      // Remove on DOM changes
       var target = document.body || document.documentElement;
       new MutationObserver(function(ms){
         for(var i=0;i<ms.length;i++){
@@ -139,6 +153,11 @@
           for(var j=0;j<added.length;j++) removeLangToggles(added[j]);
         }
       }).observe(target,{childList:true,subtree:true,attributes:true,attributeFilter:['href','lang','data-lang','aria-label','title','data-locale']});
+      
+      // Also run periodically to catch any missed elements
+      setInterval(function(){
+        removeLangToggles(document);
+      }, 1000);
     })();
     </script>
   </body>

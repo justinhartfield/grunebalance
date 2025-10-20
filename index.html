@@ -89,25 +89,56 @@
         if(!el || el.nodeType!==1) return false;
         var tag = el.tagName;
         if (tag === 'HTML' || tag === 'BODY' || (el.id||'').toLowerCase()==='root') return false;
-        var t=(el.textContent||'').trim().toLowerCase();
-        if(t==='en' || t==='english' || t==='tr' || t==='türkçe' || t==='turkish') return true;
-        var lang=(el.getAttribute('lang')||el.getAttribute('data-lang')||'').toLowerCase();
-        return !!lang && (lang==='en' || lang==='tr');
+
+        function norm(s){ return (s||'').toString().trim().toLowerCase(); }
+        var txt = norm(el.textContent);
+        var aria = norm(el.getAttribute('aria-label'));
+        var title = norm(el.getAttribute('title'));
+        var dataLocale = norm(el.getAttribute('data-locale'));
+        var dataLang = norm(el.getAttribute('data-lang'));
+        var lang = norm(el.getAttribute('lang'));
+        var href = '';
+        try { href = norm(el.getAttribute('href') || el.href); } catch(e) {}
+
+        function isEnTr(s){
+          if(!s) return false;
+          return s==='en' || s==='tr' || s==='english' || s==='türkçe' || s==='turkish' || s==='🇹🇷' || s==='🇬🇧' || s==='🇺🇸' || s==='tr🇹🇷' || s==='en🇬🇧';
+        }
+
+        if (isEnTr(txt) || isEnTr(aria) || isEnTr(title) || isEnTr(dataLocale) || isEnTr(dataLang) || isEnTr(lang)) return true;
+
+        // Short label variants like "EN" / "TR"
+        if (txt && txt.length <= 3 && (txt === 'en' || txt === 'tr')) return true;
+
+        // Links pointing to EN/TR paths or query params
+        if (href && (/(^|\/)en(\/|$)/.test(href) || /(^|\/)tr(\/|$)/.test(href) || /[?&]lang=(en|tr)\b/.test(href))) return true;
+
+        return false;
       }
       function removeLangToggles(root){
         if(!root) return;
+        if(root.nodeType===1 && isLangToggle(root)) { try{ root.remove(); }catch(e){} }
         if(root.querySelectorAll){
-          var nodes=root.querySelectorAll('a,button,[data-lang],[lang]');
-          for(var i=0;i<nodes.length;i++){ if(isLangToggle(nodes[i])) nodes[i].remove(); }
+          var nodes=root.querySelectorAll('a,button,[data-lang],[lang],[aria-label],[title]');
+          for(var i=0;i<nodes.length;i++){
+            if(isLangToggle(nodes[i])){
+              try{ nodes[i].remove(); }catch(e){}
+            }
+          }
         }
       }
       removeLangToggles(document);
+      var target = document.body || document.documentElement;
       new MutationObserver(function(ms){
         for(var i=0;i<ms.length;i++){
-          var added=ms[i].addedNodes||[];
+          var m = ms[i];
+          if (m.type === 'attributes') {
+            removeLangToggles(m.target);
+          }
+          var added=m.addedNodes||[];
           for(var j=0;j<added.length;j++) removeLangToggles(added[j]);
         }
-      }).observe(document.body || document.documentElement,{childList:true,subtree:true});
+      }).observe(target,{childList:true,subtree:true,attributes:true,attributeFilter:['href','lang','data-lang','aria-label','title','data-locale']});
     })();
     </script>
   </body>

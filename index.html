@@ -129,7 +129,7 @@
         
         // Remove child elements that are language toggles
         if(root.querySelectorAll){
-          var nodes=root.querySelectorAll('*');
+          var nodes=root.querySelectorAll('a,button,div,span,[data-lang],[lang],[aria-label],[title],[data-locale]');
           for(var i=0;i<nodes.length;i++){
             if(isLangToggle(nodes[i])){
               try{ nodes[i].remove(); }catch(e){}
@@ -154,10 +154,10 @@
         }
       }).observe(target,{childList:true,subtree:true,attributes:true,attributeFilter:['href','lang','data-lang','aria-label','title','data-locale']});
       
-      // Also run periodically to catch any missed elements
+      // Also run periodically to catch any missed elements (reduced frequency)
       setInterval(function(){
         removeLangToggles(document);
-      }, 1000);
+      }, 3000);
     })();
     </script>
   </body>

@@ -15,8 +15,8 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GRUNEBALANCE.DE - Find Your Way</title>
-  <script type="module" crossorigin src="/assets/index-D0qANUs9.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-EqeilUFK.css">
+  <script type="module" crossorigin src="/assets/script.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/style.css">
 </head>
 
 <body>
@@ -96,96 +96,6 @@
       text-decoration: underline
     }
   </style>
-  <style>
-    /* Hide language switcher buttons - narrow targeting */
-    [data-lang="en"],
-    [data-lang="tr"],
-    [data-locale="en"],
-    [data-locale="tr"],
-    [lang="en"],
-    [lang="tr"] {
-      display: none !important;
-      visibility: hidden !important;
-    }
-  </style>
-  <!-- <script>
-    // Remove English/Turkish language toggles via DOM manipulation
-    (function(){
-      function isLangToggle(el){
-        if(!el || el.nodeType!==1) return false;
-        var tag = el.tagName;
-        if (tag === 'HTML' || tag === 'BODY' || (el.id||'').toLowerCase()==='root') return false;
-
-        function norm(s){ return (s||'').toString().trim().toLowerCase(); }
-        var txt = norm(el.textContent);
-        var aria = norm(el.getAttribute('aria-label'));
-        var title = norm(el.getAttribute('title'));
-        var dataLocale = norm(el.getAttribute('data-locale'));
-        var dataLang = norm(el.getAttribute('data-lang'));
-        var lang = norm(el.getAttribute('lang'));
-        var href = '';
-        try { href = norm(el.getAttribute('href') || el.href); } catch(e) {}
-
-        // Check for flag emojis and language text
-        var hasEnFlag = txt.includes('🇬🇧') || txt.includes('🇺🇸') || txt.includes('🇬🇧') || txt.includes('🇺🇸');
-        var hasTrFlag = txt.includes('🇹🇷');
-        var hasEnText = txt.includes('english') || txt.includes('en') || aria.includes('english') || aria.includes('en');
-        var hasTrText = txt.includes('türkçe') || txt.includes('turkish') || txt.includes('tr') || aria.includes('türkçe') || aria.includes('turkish') || aria.includes('tr');
-
-        // Remove if contains English or Turkish flags/text
-        if (hasEnFlag || hasTrFlag || hasEnText || hasTrText) return true;
-
-        // Check for language codes
-        if (lang === 'en' || lang === 'tr' || dataLang === 'en' || dataLang === 'tr' || dataLocale === 'en' || dataLocale === 'tr') return true;
-
-        // Check for href patterns
-        if (href && (/(^|\/)en(\/|$)/.test(href) || /(^|\/)tr(\/|$)/.test(href) || /[?&]lang=(en|tr)\b/.test(href))) return true;
-
-        return false;
-      }
-
-      function removeLangToggles(root){
-        if(!root) return;
-
-        // Remove the element itself if it's a language toggle
-        if(root.nodeType===1 && isLangToggle(root)) {
-          try{ root.remove(); }catch(e){}
-          return;
-        }
-
-        // Remove child elements that are language toggles
-        if(root.querySelectorAll){
-          var nodes=root.querySelectorAll('a,button,div,span,[data-lang],[lang],[aria-label],[title],[data-locale]');
-          for(var i=0;i<nodes.length;i++){
-            if(isLangToggle(nodes[i])){
-              try{ nodes[i].remove(); }catch(e){}
-            }
-          }
-        }
-      }
-
-      // Remove immediately
-      removeLangToggles(document);
-
-      // Remove on DOM changes
-      var target = document.body || document.documentElement;
-      new MutationObserver(function(ms){
-        for(var i=0;i<ms.length;i++){
-          var m = ms[i];
-          if (m.type === 'attributes') {
-            removeLangToggles(m.target);
-          }
-          var added=m.addedNodes||[];
-          for(var j=0;j<added.length;j++) removeLangToggles(added[j]);
-        }
-      }).observe(target,{childList:true,subtree:true,attributes:true,attributeFilter:['href','lang','data-lang','aria-label','title','data-locale']});
-
-      // Periodic cleanup for any missed elements
-      setInterval(function(){
-        removeLangToggles(document);
-      }, 3000);
-    })();
-    </script> -->
 </body>
 
 </html>
